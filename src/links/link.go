@@ -29,5 +29,5 @@ func NewLink(version string, values *templates.Values) (*Link, error) {
 	return &Link{
 		Version: version,
 		Values:  values,
-	}
+	}, nil
 }

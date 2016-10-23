@@ -19,9 +19,9 @@ func main() {
 		LinkStore:     links.NewInMemoryStore(),
 	}
 
-	router.OPTIONS("/*", api.InjectConfig(conf, api.CORS))
+	router.OPTIONS("/*path", api.InjectConfig(conf, api.CORS))
 	router.GET("/links/:slug", api.InjectConfig(conf, api.GetLink))
-	router.POST("/links/:version", api.InjectConfig(conf, api.PostLink))
+	router.POST("/links", api.InjectConfig(conf, api.PostLink))
 
 	log.Println("Listening on 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

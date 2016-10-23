@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"github.com/devlucky/fakelink/src/links"
 	"github.com/devlucky/fakelink/src/templates"
-	"github.com/devlucky/maporable-api/models"
 	"github.com/julienschmidt/httprouter"
-	"k8s.io/kuberenetes/third_party/golang/go/doc/testdata"
 	"log"
 	"net/http"
 )
@@ -28,7 +26,7 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 	}
 	defer r.Body.Close()
 
-	link, err := links.NewLink(ps.ByName("version"), input)
+	link, err := links.NewLink("v1", input)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		msg := fmt.Sprintf("Invalid values. Error was: %s", err)
