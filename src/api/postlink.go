@@ -26,7 +26,7 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 	}
 	defer r.Body.Close()
 
-	link, err := links.NewLink("v1", input)
+	link, err := links.NewLink(input)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		msg := fmt.Sprintf("Invalid values. Error was: %s", err)
