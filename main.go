@@ -19,6 +19,7 @@ func main() {
 		LinkStore:     links.NewInMemoryStore(),
 	}
 
+	router.OPTIONS("/*", api.InjectConfig(conf, api.CORS))
 	router.GET("/links/:slug", api.InjectConfig(conf, api.GetLink))
 	router.POST("/links/:version", api.InjectConfig(conf, api.PostLink))
 

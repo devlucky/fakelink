@@ -45,6 +45,7 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(jsonResp))
 }
