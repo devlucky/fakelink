@@ -1,16 +1,16 @@
 package templates
 
 import (
-	"testing"
 	"bytes"
-	"strings"
 	"fmt"
+	"strings"
+	"testing"
 )
 
 func TestGetTemplate(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
-			t.Errorf("The code panicked")
+			t.Error("The code panicked")
 		}
 	}()
 
@@ -19,11 +19,12 @@ func TestGetTemplate(t *testing.T) {
 
 func TestExecuteTemplateWithValues(t *testing.T) {
 	values := &Values{
-		Title: "some-title",
+		Title:       "some-title",
 		Description: "some-description",
-		Type: "some-type",
-		Url: "some-url",
-		Image: "some-image",
+		SiteName:    "some-site-name",
+		Type:        "some-type",
+		Url:         "some-url",
+		Image:       "some-image",
 	}
 
 	buf := new(bytes.Buffer)
@@ -51,8 +52,12 @@ func TestExecuteTemplateWithoutValues(t *testing.T) {
 	expectNotToContain(
 		t,
 		generatedTemplate,
-		"og:title",
-		"og:description",
+		"title",
+		"description",
+		"site_name",
+		"type",
+		"url",
+		"image",
 	)
 }
 

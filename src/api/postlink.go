@@ -10,12 +10,16 @@ import (
 	"net/http"
 )
 
-type PostLinkResponse struct {
+type PostLinkInput struct {
+	Values *templates.Values `json:"values"`
+}
+
+type PostLinkOutput struct {
 	Slug string `json:"slug"`
 }
 
 func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
-	var input *templates.Values
+	var input PostLinkInput
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&input)
@@ -26,7 +30,7 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 	}
 	defer r.Body.Close()
 
-	link, err := links.NewLink(input)
+	link, err := links.NewLink(input.Values)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		msg := fmt.Sprintf("Invalid values. Error was: %s", err)
@@ -36,7 +40,7 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 
 	slug := c.LinkStore.Create(link)
 
-	jsonResp, err := json.Marshal(&PostLinkResponse{slug})
+	jsonResp, err := json.Marshal(&PostLinkOutput{slug})
 	if err != nil {
 		log.Printf("Unexpected error %s when marshaling the response into JSON", err)
 		w.WriteHeader(http.StatusInternalServerError)

@@ -1,13 +1,13 @@
 package links
 
 import (
-	"testing"
 	"github.com/devlucky/fakelink/src/templates"
+	"testing"
 )
 
 /*
 	Generic test suite for stores
- */
+*/
 
 func behavesLikeAStore(t *testing.T, adapter Store) {
 	testFindMissing(t, adapter)
@@ -40,10 +40,9 @@ func testCreateAndFind(t *testing.T, adapter Store) {
 	}
 }
 
-
 /*
 	The in-memory implementation complies with the expected behavior
- */
+*/
 
 func TestInMemoryStore(t *testing.T) {
 	adapter := NewInMemoryStore()

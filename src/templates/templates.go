@@ -11,6 +11,7 @@ import (
 type Values struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	SiteName    string `json:"site_name"`
 	Type        string `json:"type"`
 	Url         string `json:"url"`
 	Image       string `json:"image"`
@@ -25,10 +26,11 @@ const templateStr = `
     <meta property="og:title" content="{{.Title}}" />
     {{end}}
 
-    <meta property="og:description" content="{{.Description}}" />
-    <meta property="og:type" content="{{.Type}}" />
-    <meta property="og:url" content="{{.Url}}" />
-    <meta property="og:image" content="{{.Image}}" />
+    {{if .SiteName}}<meta property="og:site_name" content="{{.SiteName}}" />{{end}}
+    {{if .Description}}<meta property="og:description" content="{{.Description}}" />{{end}}
+    {{if .Type}}<meta property="og:type" content="{{.Type}}" />{{end}}
+    {{if .Url}}<meta property="og:url" content="{{.Url}}" />{{end}}
+    {{if .Image}}<meta property="og:image" content="{{.Image}}" />{{end}}
 </head>
 </html>
 `
