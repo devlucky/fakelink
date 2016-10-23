@@ -4,30 +4,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
-	"fmt"
-	"html/template"
-	"errors"
+	"github.com/devlucky/fakelink/src/templates"
 )
-
-type V1 struct {
-	Title string
-	Type string
-	Url string
-	Image string
-}
-
-const templateV1 = `
-<!DOCTYPE html>
-<html prefix="og: http://ogp.me/ns#">
-<head>
-    <title>{{.Title}}</title>
-    <meta property="og:title" content="{{.Title}}" />
-    <meta property="og:type" content="{{.Type}}" />
-    <meta property="og:url" content="{{.Url}}" />
-    <meta property="og:image" content="{{.Image}}" />
-</head>
-</html>
-`
 
 func GetLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
 	slug := ps.ByName("slug")
@@ -45,7 +23,7 @@ func GetLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Co
 
 	// TODO: Change this temporary mock for something that comes from the database
 
-	values := &V1{
+	values := &templates.Values{
 		Title: "Sharknado",
 		Type: "website",
 		Url: "http://www.imdb.com/title/tt2724064/",
@@ -63,33 +41,9 @@ func InjectConfig(a *Config, f func (http.ResponseWriter, *http.Request, httprou
 }
 
 type Config struct {
-	TemplateStore *TemplateStore
+	TemplateStore *templates.Store
 }
 
-type TemplateStore struct {
-	templates map[string]*template.Template
-}
-
-func NewTemplateStore() (*TemplateStore) {
-	templates := make(map[string]*template.Template)
-
-	// TODO: Make this lazy and based on a map constant
-	v1, err := template.New("v1").Parse(templateV1)
-	if err != nil {
-		log.Fatalf("Unexpected error parsing the template: %s", err)
-	}
-	templates["v1"] = v1
-
-	return &TemplateStore{templates}
-}
-
-func (store *TemplateStore) GetTemplate(version string) (*template.Template, error) {
-	if t, ok := store.templates[version]; ok {
-		return t, nil
-	}
-
-	return nil, errors.New(fmt.Sprintf("Could not find template %s", version))
-}
 
 func main() {
 	router := httprouter.New()
@@ -97,7 +51,7 @@ func main() {
 	// TODO: Take this piece of code to a template store that loads lazily and stores the templates in the cache
 
 	conf := &Config{
-		TemplateStore: NewTemplateStore(),
+		TemplateStore: templates.NewStore(),
 	}
 
 	router.GET("/links/:slug", InjectConfig(conf, GetLink))
