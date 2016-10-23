@@ -12,4 +12,3 @@ const v1 = `
 </head>
 </html>
 `
-
