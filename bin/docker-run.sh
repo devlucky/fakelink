@@ -6,7 +6,6 @@ export DOCKER_TAG=${DOCKER_TAG:-"local"}
 
 ENTRYPOINT=$1
 ARGS=${@:2}
-CONTAINER="fakelink"
 
 runDocker() {
   DOCKER_IMAGE=${DOCKER_IMAGE}-dev docker-compose run ${1} api ${ARGS}
@@ -22,7 +21,7 @@ fi
 
 SUCCESS=$?
 
-docker kill $CONTAINER
-docker rm -f $CONTAINER
+docker-compose kill
+docker-compose rm -f
 
 exit $SUCCESS
