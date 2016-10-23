@@ -1,0 +1,32 @@
+{{ $registry := (or .Registry "") }}
+{{ $image := (or .Image "devlucky/fakelink") }}
+{{ $version:= (or .Version "local") }}
+
+FROM golang:1.7-alpine
+RUN apk --update add bash
+
+# Golang build cache
+MOUNT /go/pkg/linux_amd64 /usr/local/go/pkg/linux_amd64
+
+ADD . /go/src/github.com/{{$image}}
+WORKDIR /go/src/github.com/{{$image}}
+
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO15VENDOREXPERIMENT=1
+
+RUN go build -o /app main.go
+
+EXPOSE 8080
+ENTRYPOINT ["/app"]
+
+TAG {{$registry}}{{$image}}-dev:{{$version}}
+
+EXPORT /app /app
+
+#========
+
+FROM scratch
+EXPOSE 8080
+IMPORT /app /app
+ENTRYPOINT ["/app"]
+
+TAG {{$registry}}{{$image}}:{{$version}}

@@ -1,0 +1,8 @@
+version: '2'
+services:
+  api:
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    volumes:
+      - ./src:/src
+    ports:
+      - 8080:8080
