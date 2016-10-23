@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/julienschmidt/httprouter"
-	"log"
 	"net/http"
 )
 
@@ -15,13 +14,6 @@ func GetLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Co
 		return
 	}
 
-	template, err := c.TemplateStore.GetTemplate(link.Version)
-	if err != nil {
-		log.Printf("Unexpected template %s could not be found. Error: %s", "v1", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	w.WriteHeader(http.StatusOK)
-	template.Execute(w, link.Values)
+	c.Template.Execute(w, link.Values)
 }

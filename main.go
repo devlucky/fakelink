@@ -15,7 +15,7 @@ func main() {
 	// TODO: Take this piece of code to a template store that loads lazily and stores the templates in the cache
 
 	conf := &api.Config{
-		TemplateStore: templates.NewInMemoryStore(),
+		Template: templates.Get(),
 		LinkStore:     links.NewInMemoryStore(),
 	}
 

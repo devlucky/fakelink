@@ -1,10 +1,9 @@
 package api
 
 import (
-	"net/http"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
-
 
 func CORS(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")

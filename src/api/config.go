@@ -2,16 +2,16 @@ package api
 
 import (
 	"github.com/devlucky/fakelink/src/links"
-	"github.com/devlucky/fakelink/src/templates"
 	"github.com/julienschmidt/httprouter"
+	"html/template"
 	"net/http"
 )
 
 // Config is a container for all the interfaces and configuration options the API uses.
 // It will be injected to the endpoints in order to allow them to access these options in a DI way
 type Config struct {
-	TemplateStore templates.Store
-	LinkStore     links.Store
+	Template  *template.Template
+	LinkStore links.Store
 }
 
 // Wraps an endpoint handler with a function that has access to a Config
