@@ -5,37 +5,67 @@ import (
 	"testing"
 	"os"
 	"reflect"
+	"github.com/devlucky/fakelink/src/helpers"
 )
 
 /*
 	Generic test suite for stores
 */
 
-func behavesLikeAStore(t *testing.T, adapter Store) {
-	adapter.clear()
-	testFindMissing(t, adapter)
+func behavesLikeAStore(t *testing.T, store Store) {
+	store.clear()
+	testFindMissing(t, store)
 
-	adapter.clear()
-	testCreateAndFind(t, adapter)
+	store.clear()
+	testCreateAndFind(t, store)
+
+	store.clear()
+	testFindRandom(t, store)
 }
 
-func testFindMissing(t *testing.T, adapter Store) {
-	link := adapter.Find("missing")
+func testFindMissing(t *testing.T, store Store) {
+	link := store.Find("missing")
 	if link != nil {
 		t.Error("Expected .Find on a missing link to be nil")
 	}
 }
 
-func testCreateAndFind(t *testing.T, adapter Store) {
+func testFindRandom(t *testing.T, store Store) {
+	slug := store.FindRandom()
+	if slug != "" {
+		t.Error("Expected .FindRandom to return nil when the store is empty")
+	}
+
+	slugs := createLinks(t, store, 10)
+
+	random := false
+
+	for i := 0; !random && i < 10; i++ {
+		s1, s2 := store.FindRandom(), store.FindRandom()
+		if s1 != s2 {
+			random = true
+		}
+
+		if !helpers.StringInSlice(s1, slugs) || !helpers.StringInSlice(s2, slugs) {
+			t.Error("Expected .FindRandom to return existing slugs")
+		}
+	}
+
+	if !random {
+		t.Error("Expected .FindRandom to provide random link slugs")
+	}
+}
+
+func testCreateAndFind(t *testing.T, store Store) {
 	values := &templates.Values{Title: "something"}
 	link, err := NewLink(values)
 	if err != nil {
-		t.Error("Not expecting .NewLink to fail. Instead, got", err)
+		t.Fatal("Not expecting .NewLink to fail. Instead, got", err)
 	}
 
-	slug := adapter.Create(link)
+	slug := store.Create(link)
 
-	link = adapter.Find(slug)
+	link = store.Find(slug)
 	if link == nil {
 		t.Error("Expected .Find to find a link after .Create")
 	}
@@ -45,21 +75,37 @@ func testCreateAndFind(t *testing.T, adapter Store) {
 	}
 }
 
+func createLinks(t *testing.T, store Store, n int) ([]string) {
+	slugs := make([]string, n)
+
+	for i := 0; i < n; i++ {
+		link, err := NewLink(&templates.Values{})
+		if err != nil {
+			t.Fatal("Not expecting .NewLink to fail. Instead, got", err)
+		}
+
+		slugs = append(slugs, store.Create(link))
+	}
+
+	return slugs
+}
+
+
 /*
 	All implementations comply with the expected behavior
 */
 
 func TestInMemoryStore(t *testing.T) {
-	adapter := NewInMemoryStore()
-	behavesLikeAStore(t, adapter)
+	store := NewInMemoryStore()
+	behavesLikeAStore(t, store)
 }
 
 func TestRedisStore(t *testing.T) {
-	adapter := NewRedisStore(
+	store := NewRedisStore(
 		os.Getenv("REDIS_HOST"),
 		os.Getenv("REDIS_PORT"),
 		os.Getenv("REDIS_PASS"),
 		0,
 	)
-	behavesLikeAStore(t, adapter)
+	behavesLikeAStore(t, store)
 }

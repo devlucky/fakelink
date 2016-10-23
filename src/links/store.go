@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"log"
 	"encoding/json"
+	"math/rand"
 )
 
 // A Store allows saving and retrieving user-generated links
 type Store interface {
 	Find(slug string) *Link
+	FindRandom() (slug string)
 	Create(link *Link) string
 	clear()
 }
@@ -31,6 +33,25 @@ func NewInMemoryStore() *InMemoryStore {
 
 func (store *InMemoryStore) Find(slug string) *Link {
 	return store.links[slug]
+}
+
+func (store *InMemoryStore) FindRandom() (slug string) {
+	if len(store.links) == 0 {
+		return
+	}
+
+	i := 0
+	n := rand.Int() % len(store.links)
+
+	for s := range store.links {
+		if i == n {
+			slug = s
+			break
+		}
+		i++
+	}
+
+	return
 }
 
 func (store *InMemoryStore) Create(link *Link) string {
@@ -79,6 +100,16 @@ func (store *RedisStore) Find(slug string) *Link {
 	}
 
 	return link
+}
+
+func (store *RedisStore) FindRandom() (slug string) {
+	slug, err := store.client.RandomKey().Result()
+	if err != nil {
+		log.Printf("Getting link with slug %s failed with error %s", slug, err)
+		return
+	}
+
+	return
 }
 
 func (store *RedisStore) Create(link *Link) string {

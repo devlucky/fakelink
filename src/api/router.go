@@ -9,6 +9,7 @@ import (
 func NewRouter(config *Config) *httprouter.Router {
 	router := httprouter.New()
 	router.OPTIONS("/*path", InjectConfig(config, CORS))
+	router.GET("/random", InjectConfig(config, GetRandom))
 	router.GET("/links/:slug", InjectConfig(config, GetLink))
 	router.POST("/links", InjectConfig(config, PostLink))
 
