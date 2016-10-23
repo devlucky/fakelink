@@ -12,7 +12,10 @@ type Link struct {
 
 func NewLink(values *templates.Values) (*Link, error) {
 	// TODO: Do some validations here, in case of injection
-	return &Link{values}, nil
+	link := &Link{
+		Values: values,
+	}
+	return link, nil
 }
 
 /*

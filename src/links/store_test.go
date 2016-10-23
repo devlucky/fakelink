@@ -3,6 +3,8 @@ package links
 import (
 	"github.com/devlucky/fakelink/src/templates"
 	"testing"
+	"os"
+	"reflect"
 )
 
 /*
@@ -10,7 +12,10 @@ import (
 */
 
 func behavesLikeAStore(t *testing.T, adapter Store) {
+	adapter.clear()
 	testFindMissing(t, adapter)
+
+	adapter.clear()
 	testCreateAndFind(t, adapter)
 }
 
@@ -35,16 +40,26 @@ func testCreateAndFind(t *testing.T, adapter Store) {
 		t.Error("Expected .Find to find a link after .Create")
 	}
 
-	if link.Values != values {
+	if !reflect.DeepEqual(link.Values, values) {
 		t.Error("Expected the link's values to be exactly the sames we stored")
 	}
 }
 
 /*
-	The in-memory implementation complies with the expected behavior
+	All implementations comply with the expected behavior
 */
 
 func TestInMemoryStore(t *testing.T) {
 	adapter := NewInMemoryStore()
+	behavesLikeAStore(t, adapter)
+}
+
+func TestRedisStore(t *testing.T) {
+	adapter := NewRedisStore(
+		os.Getenv("REDIS_HOST"),
+		os.Getenv("REDIS_PORT"),
+		os.Getenv("REDIS_PASS"),
+		0,
+	)
 	behavesLikeAStore(t, adapter)
 }

@@ -1,8 +1,17 @@
 version: '2'
 services:
   api:
-    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    image: ${DOCKER_IMAGE}${DOCKER_ENVIRONMENT}:${DOCKER_TAG}
+    depends_on:
+      - redis
     volumes:
-      - ./src:/src
+      - ./src:/go/src/github.com/${DOCKER_IMAGE}/src
     ports:
       - 8080:8080
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASS: ""
+
+  redis:
+    image: redis:3.2-alpine
