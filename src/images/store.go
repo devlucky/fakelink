@@ -10,6 +10,7 @@ import (
 	"log"
 	"bytes"
 	"image/jpeg"
+	"github.com/minio/minio-go"
 )
 
 type Store interface {
@@ -85,7 +86,7 @@ func (store *S3Store) Put(slug string, img image.Image) (url string, err error) 
 		return
 	}
 
-	out, err := store.client.PutObject(&s3.PutObjectInput{
+	_, err = store.client.PutObject(&s3.PutObjectInput{
 		Body:   bytes.NewReader(buf.Bytes()),
 		Bucket: bucket,
 		Key:    key,
@@ -93,8 +94,6 @@ func (store *S3Store) Put(slug string, img image.Image) (url string, err error) 
 	if err != nil {
 		return
 	}
-
-	fmt.Printf("Successfully created bucket %s and uploaded data with key %s. The output was %s\n", *bucket, *key, out.GoString())
 
 	// TODO: Find out how to return the actual URL (may need some steroids here)
 	url = "some-url"
@@ -161,3 +160,85 @@ func (store *S3Store) createBucket() {
 
 
 
+
+
+/*
+	Implementation of a Store based on Minio's SDK
+ */
+
+type MinioStore struct {
+	client *minio.Client
+}
+
+func NewMinioStore(host, port, accessKey, accessSecret string) (*MinioStore) {
+	client, err := minio.New(fmt.Sprintf("%s:%s", host, port), accessKey, accessSecret, false)
+	if err != nil {
+		log.Fatalf("Unexpected error creating a Minio client: %s", err)
+	}
+
+	bucketExists, err := client.BucketExists(bucketName)
+	if err != nil {
+		log.Fatalf("Unexpected error checking whether a bucket exists: %s", err)
+	}
+
+	if !bucketExists {
+		err = client.MakeBucket(bucketName, "us-east-1")
+		if err != nil {
+			log.Fatalf("Unexpected error creating a new bucket: %s", err)
+		}
+	}
+
+	return &MinioStore{
+		client: client,
+	}
+}
+
+func (store *MinioStore) Put(slug string, img image.Image) (url string, err error) {
+	// TODO: Test this using just the buffer
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, img, nil)
+	if err != nil {
+		return
+	}
+
+	_, err = store.client.PutObject(bucketName, slug, bytes.NewReader(buf.Bytes()), "image/jpeg")
+	if err != nil {
+		return
+	}
+
+	// TODO: Find out how to return the actual URL (may need some steroids here)
+	url = "some-url"
+	return
+}
+
+func (store *MinioStore) Get(slug string) (img image.Image) {
+	obj, err := store.client.GetObject(bucketName, slug)
+	if err != nil {
+		log.Print("Unexpected error retrieving image from Minio", err)
+		return nil
+	}
+
+	img, err = jpeg.Decode(obj)
+	if err != nil {
+		log.Print("Unexpected error decoding image retrieved from Minio", err)
+		return nil
+	}
+
+	return img
+}
+
+func (store *MinioStore) clear() {
+	doneCh := make(chan struct{})
+	defer close(doneCh)
+
+	for object := range store.client.ListObjects(bucketName, "*", true, doneCh) {
+		if object.Err != nil {
+			log.Fatalf("Unexpected error listing objects from Minio: %s", object.Err)
+		}
+
+		err := store.client.RemoveObject(bucketName, object.Key)
+		if err != nil {
+			log.Fatalf("Unexpected error removing object from Minio: %s", object.Err)
+		}
+	}
+}

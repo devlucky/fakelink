@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/url"
 	"os"
+	"github.com/satori/go.uuid"
 )
 
 /*
@@ -56,7 +57,7 @@ func imagesAreEqual(a, b image.Image) (bool) {
 	return a.Bounds().Eq(b.Bounds())
 }
 
-func generateRandomImage() (image.Image){
+func generateRandomImage() (*image.RGBA){
 	bounds := image.Rect(0,0,20,20)
 	img := image.NewRGBA(bounds)
 	for y := 0; y < bounds.Max.Y; y++ {
@@ -88,4 +89,70 @@ func TestS3Store(t *testing.T) {
 		os.Getenv("MINIO_SECRET_KEY"),
 	)
 	behavesLikeAStore(t, store)
+}
+
+func TestMinioStore(t *testing.T) {
+	store := NewMinioStore(
+		os.Getenv("MINIO_HOST"),
+		os.Getenv("MINIO_PORT"),
+		os.Getenv("MINIO_ACCESS_KEY"),
+		os.Getenv("MINIO_SECRET_KEY"),
+	)
+	behavesLikeAStore(t, store)
+}
+
+
+/*
+	BENCHMARKS
+ */
+
+func benchmarkStorePut(b *testing.B, store Store) {
+	img := generateRandomImage()
+	slugs := make([]string, b.N)
+
+	for i := 0; i < b.N; i++ {
+		slugs = append(slugs, uuid.NewV4().String())
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		store.Put(slugs[i], img)
+	}
+}
+
+func benchmarkStorePutAndGet(b *testing.B, store Store) {
+	img := generateRandomImage()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		slug := uuid.NewV4().String()
+		store.Put(slug, img)
+		store.Get(slug)
+	}
+}
+
+func BenchmarkInMemoryStorePut(b *testing.B) {
+	store := NewInMemoryStore()
+	benchmarkStorePutAndGet(b, store)
+}
+
+func BenchmarkS3StorePut(b *testing.B) {
+	store := NewS3Store(
+		os.Getenv("MINIO_HOST"),
+		os.Getenv("MINIO_PORT"),
+		os.Getenv("MINIO_ACCESS_KEY"),
+		os.Getenv("MINIO_SECRET_KEY"),
+	)
+	benchmarkStorePutAndGet(b, store)
+}
+
+func BenchmarkMinioStorePut(b *testing.B) {
+	store := NewMinioStore(
+		os.Getenv("MINIO_HOST"),
+		os.Getenv("MINIO_PORT"),
+		os.Getenv("MINIO_ACCESS_KEY"),
+		os.Getenv("MINIO_SECRET_KEY"),
+	)
+	benchmarkStorePutAndGet(b, store)
 }
