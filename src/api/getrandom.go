@@ -1,9 +1,9 @@
 package api
 
 import (
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"fmt"
 )
 
 func GetRandom(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {

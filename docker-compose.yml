@@ -4,6 +4,7 @@ services:
     image: ${DOCKER_IMAGE}${DOCKER_ENVIRONMENT}:${DOCKER_TAG}
     depends_on:
       - redis
+      - minio
     volumes:
       - ./src:/go/src/github.com/${DOCKER_IMAGE}/src
     ports:
@@ -12,6 +13,19 @@ services:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
       REDIS_PASS: ""
+      MINIO_HOST: "minio"
+      MINIO_PORT: "9000"
+      MINIO_ACCESS_KEY: "minioclient"
+      MINIO_SECRET_KEY: "supersecret"
+
 
   redis:
     image: redis:3.2-alpine
+
+  minio:
+    image: minio/minio:RELEASE.2016-10-07T01-16-39Z
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: "minioclient"
+      MINIO_SECRET_KEY: "supersecret"

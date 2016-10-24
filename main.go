@@ -6,12 +6,17 @@ import (
 	"github.com/devlucky/fakelink/src/templates"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
 	config := &api.Config{
 		Template: templates.Get(),
-		LinkStore: links.NewInMemoryStore(),
+		LinkStore: links.NewRedisStore(
+			os.Getenv("REDIS_HOST"),
+			os.Getenv("REDIS_PORT"),
+			os.Getenv("REDIS_PASS"),
+		),
 	}
 	router := api.NewRouter(config)
 

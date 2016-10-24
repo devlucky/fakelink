@@ -1,11 +1,11 @@
 package links
 
 import (
+	"github.com/devlucky/fakelink/src/helpers"
 	"github.com/devlucky/fakelink/src/templates"
-	"testing"
 	"os"
 	"reflect"
-	"github.com/devlucky/fakelink/src/helpers"
+	"testing"
 )
 
 /*
@@ -31,12 +31,13 @@ func testFindMissing(t *testing.T, store Store) {
 }
 
 func testFindRandom(t *testing.T, store Store) {
+	createLinks(t, store, 1, true)
 	slug := store.FindRandom()
 	if slug != "" {
-		t.Error("Expected .FindRandom to return nil when the store is empty")
+		t.Error("Expected .FindRandom to return nil when the store is empty, or contains only private links")
 	}
 
-	slugs := createLinks(t, store, 10)
+	slugs := createLinks(t, store, 10, false)
 
 	random := false
 
@@ -58,7 +59,7 @@ func testFindRandom(t *testing.T, store Store) {
 
 func testCreateAndFind(t *testing.T, store Store) {
 	values := &templates.Values{Title: "something"}
-	link, err := NewLink(values)
+	link, err := NewLink(values, true)
 	if err != nil {
 		t.Fatal("Not expecting .NewLink to fail. Instead, got", err)
 	}
@@ -75,11 +76,11 @@ func testCreateAndFind(t *testing.T, store Store) {
 	}
 }
 
-func createLinks(t *testing.T, store Store, n int) ([]string) {
+func createLinks(t *testing.T, store Store, n int, private bool) []string {
 	slugs := make([]string, n)
 
 	for i := 0; i < n; i++ {
-		link, err := NewLink(&templates.Values{})
+		link, err := NewLink(&templates.Values{}, private)
 		if err != nil {
 			t.Fatal("Not expecting .NewLink to fail. Instead, got", err)
 		}
@@ -89,7 +90,6 @@ func createLinks(t *testing.T, store Store, n int) ([]string) {
 
 	return slugs
 }
-
 
 /*
 	All implementations comply with the expected behavior
@@ -105,7 +105,6 @@ func TestRedisStore(t *testing.T) {
 		os.Getenv("REDIS_HOST"),
 		os.Getenv("REDIS_PORT"),
 		os.Getenv("REDIS_PASS"),
-		0,
 	)
 	behavesLikeAStore(t, store)
 }

@@ -24,7 +24,7 @@ func TestPostLinkWithWrongInput(t *testing.T) {
 
 func TestPostLink(t *testing.T) {
 	input := &PostLinkInput{
-		Values: links.RandomLink().Values,
+		Link: links.RandomLink(),
 	}
 
 	inputBytes, err := json.Marshal(input)
@@ -53,7 +53,7 @@ func TestPostLink(t *testing.T) {
 		t.Error("Expected POST /links to return the slug that identifies the links")
 	}
 
-	if !reflect.DeepEqual(link.Values, input.Values) {
-		t.Error("Expected input and saved values to be the same")
+	if !reflect.DeepEqual(link, input.Link) {
+		t.Error("Expected input and saved links to be the same")
 	}
 }

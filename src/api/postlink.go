@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/devlucky/fakelink/src/links"
-	"github.com/devlucky/fakelink/src/templates"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 )
 
 type PostLinkInput struct {
-	Values *templates.Values `json:"values"`
+	Link *links.Link `json:"link"`
 }
 
 type PostLinkOutput struct {
@@ -30,7 +29,8 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 	}
 	defer r.Body.Close()
 
-	link, err := links.NewLink(input.Values)
+	// We pass the new link through the creator in order to validate the raw input
+	link, err := links.NewLink(input.Link.Values, input.Link.Private)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		msg := fmt.Sprintf("Invalid values. Error was: %s", err)
