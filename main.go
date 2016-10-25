@@ -1,39 +1,26 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/devlucky/fakelink/src/api"
 	"github.com/devlucky/fakelink/src/images"
 	"github.com/devlucky/fakelink/src/links"
 	"github.com/devlucky/fakelink/src/templates"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"fmt"
 )
 
 func importLinkExamples(c *api.Config) {
-	var exampleLinks []*links.Link
-	filename := "./assets/examples/links.json"
-	file, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatalf("Unexpected error reading file %s: %s", filename, err)
+	for _, link := range links.ExampleLinks {
+		c.LinkStore.Create(link)
 	}
-
-	err = json.Unmarshal(file, &exampleLinks)
-	if err != nil {
-		log.Fatalf("Unexpected error marshaling examples: %s", err)
-	}
-
-	for _, l := range exampleLinks {
-		c.LinkStore.Create(l)
-	}
-
 	log.Println("Successfully imported example links")
 }
 
 func main() {
 	config := &api.Config{
+		RootPath: fmt.Sprintf("%s/src/github.com/devlucky/fakelink", os.Getenv("GOPATH")),
 		Template: templates.Get(),
 		LinkStore: links.NewRedisStore(
 			os.Getenv("REDIS_HOST"),

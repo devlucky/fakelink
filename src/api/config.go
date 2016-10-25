@@ -11,6 +11,7 @@ import (
 // Config is a container for all the interfaces and configuration options the API uses.
 // It will be injected to the endpoints in order to allow them to access these options in a DI way
 type Config struct {
+	RootPath       string
 	Template       *template.Template
 	LinkStore      links.Store
 	ImageStore     images.Store
