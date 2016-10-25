@@ -2,10 +2,6 @@ package images
 
 import (
 	"testing"
-	"image"
-	"image/color"
-	"math/rand"
-	"net/url"
 	"os"
 	"github.com/satori/go.uuid"
 )
@@ -32,16 +28,10 @@ func testGetMissing(t *testing.T, store Store) {
 func testPutAndGet(t *testing.T, store Store) {
 	img := generateRandomImage()
 
-	imgUrlStr, err := store.Put("some-image", img)
+	err := store.Put("some-image", img)
 	if err != nil {
 		t.Fatal("Unexpected error on image .Put", err)
 	}
-
-	_, err = url.Parse(imgUrlStr)
-	if err != nil {
-		t.Errorf("Expected %s to be an actual URL", imgUrlStr)
-	}
-
 
 	retrievedImg := store.Get("some-image")
 	if retrievedImg == nil {
@@ -51,25 +41,6 @@ func testPutAndGet(t *testing.T, store Store) {
 	if !imagesAreEqual(img, retrievedImg) {
 		t.Error("Expected put and retrieved images to be equal")
 	}
-}
-
-func imagesAreEqual(a, b image.Image) (bool) {
-	return a.Bounds().Eq(b.Bounds())
-}
-
-func generateRandomImage() (*image.RGBA){
-	bounds := image.Rect(0,0,20,20)
-	img := image.NewRGBA(bounds)
-	for y := 0; y < bounds.Max.Y; y++ {
-		for x := 0; x < bounds.Max.X - 1; x++ {
-			a0 := uint8(rand.Float32() * 255)
-			rgb0 := uint8(rand.Float32() * 255)
-			rgb0 = rgb0 * a0
-			img.SetRGBA(x, y, color.RGBA{rgb0,rgb0,rgb0,a0})
-		}
-	}
-
-	return img
 }
 
 /*
@@ -91,37 +62,12 @@ func TestS3Store(t *testing.T) {
 	behavesLikeAStore(t, store)
 }
 
-func TestMinioStore(t *testing.T) {
-	store := NewMinioStore(
-		os.Getenv("MINIO_HOST"),
-		os.Getenv("MINIO_PORT"),
-		os.Getenv("MINIO_ACCESS_KEY"),
-		os.Getenv("MINIO_SECRET_KEY"),
-	)
-	behavesLikeAStore(t, store)
-}
-
 
 /*
 	BENCHMARKS
  */
 
-func benchmarkStorePut(b *testing.B, store Store) {
-	img := generateRandomImage()
-	slugs := make([]string, b.N)
-
-	for i := 0; i < b.N; i++ {
-		slugs = append(slugs, uuid.NewV4().String())
-	}
-
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
-		store.Put(slugs[i], img)
-	}
-}
-
-func benchmarkStorePutAndGet(b *testing.B, store Store) {
+func benchmarkStore(b *testing.B, store Store) {
 	img := generateRandomImage()
 	b.ResetTimer()
 
@@ -132,27 +78,17 @@ func benchmarkStorePutAndGet(b *testing.B, store Store) {
 	}
 }
 
-func BenchmarkInMemoryStorePut(b *testing.B) {
+func BenchmarkInMemoryStore(b *testing.B) {
 	store := NewInMemoryStore()
-	benchmarkStorePutAndGet(b, store)
+	benchmarkStore(b, store)
 }
 
-func BenchmarkS3StorePut(b *testing.B) {
+func BenchmarkS3Store(b *testing.B) {
 	store := NewS3Store(
 		os.Getenv("MINIO_HOST"),
 		os.Getenv("MINIO_PORT"),
 		os.Getenv("MINIO_ACCESS_KEY"),
 		os.Getenv("MINIO_SECRET_KEY"),
 	)
-	benchmarkStorePutAndGet(b, store)
-}
-
-func BenchmarkMinioStorePut(b *testing.B) {
-	store := NewMinioStore(
-		os.Getenv("MINIO_HOST"),
-		os.Getenv("MINIO_PORT"),
-		os.Getenv("MINIO_ACCESS_KEY"),
-		os.Getenv("MINIO_SECRET_KEY"),
-	)
-	benchmarkStorePutAndGet(b, store)
+	benchmarkStore(b, store)
 }
