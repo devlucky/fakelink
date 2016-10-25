@@ -3,10 +3,11 @@ package links
 import (
 	"github.com/devlucky/fakelink/src/templates"
 	"testing"
+	"strings"
 )
 
 func TestValidNewLink(t *testing.T) {
-	values := &templates.Values{Title: "some-title"}
+	values := templates.Values{Title: "some-title"}
 	link, err := NewLink(values, true)
 	if err != nil {
 		t.Error("Expected NewLink not to fail")
@@ -21,8 +22,14 @@ func TestValidNewLink(t *testing.T) {
 	}
 }
 
+func TestInvalidNewLink(t *testing.T) {
+	if _, err := NewLink(templates.Values{}, true); err == nil {
+		t.Error("Expected NewLink to fail if passed a missing title")
+	}
+}
+
 func TestSlugGeneration(t *testing.T) {
-	l, err := NewLink(&templates.Values{}, true)
+	l, err := NewLink(templates.Values{Title: "An Extravagant Title! :)"}, true)
 	if err != nil {
 		t.Fatal("Unexpected error creating a new link", err)
 	}
@@ -30,6 +37,10 @@ func TestSlugGeneration(t *testing.T) {
 	s1, s2 := generateSlug(l), generateSlug(l)
 	if s1 == s2 {
 		t.Error("Expected two slugs to be different")
+	}
+
+	if !strings.Contains(s1, "an-extravagant-title") {
+		t.Error("Expected the slug to contain part of the title")
 	}
 
 	if !hasFlag(generateSlug(l), privateFlag) {

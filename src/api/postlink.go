@@ -65,7 +65,7 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 			return
 		}
 
-		input.Link.Values.Image = imageUrl
+		link.Values.Image = imageUrl
 	}
 
 	slug := c.LinkStore.Create(link)

@@ -168,6 +168,6 @@ func TestPostLinkWithImage(t *testing.T) {
 	}
 
 	if link.Values.Image == input.Link.Values.Image {
-		t.Error("Expected the link's Image to point to the uploaded file")
+		t.Errorf("Expected the link's Image to point to the uploaded file. Instead, it points to %s", link.Values.Image)
 	}
 }

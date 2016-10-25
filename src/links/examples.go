@@ -13,7 +13,7 @@ func RandomLink() *Link {
 var ExampleLinks = []*Link{
 	{
 		Private: false,
-		Values: &templates.Values{
+		Values: templates.Values{
 			Title:       "Sharknado (TV Movie 2013)",
 			Description: "Directed by Anthony C. Ferrante.  With Ian Ziering, Tara Reid, John Heard, Cassandra Scerbo. When a freak hurricane swamps Los Angeles, nature's deadliest killer rules sea, land, and air as thousands of sharks terrorize the waterlogged populace.",
 			SiteName:    "IMDb",
@@ -24,7 +24,7 @@ var ExampleLinks = []*Link{
 	},
 	{
 		Private: false,
-		Values: &templates.Values{
+		Values: templates.Values{
 			Title:       "Bloodhound Gang - The Bad Touch",
 			Description: "Music video by Bloodhound Gang performing The Bad Touch. (C) 1999 Interscope Records",
 			SiteName:    "YouTube",
@@ -35,7 +35,7 @@ var ExampleLinks = []*Link{
 	},
 	{
 		Private: false,
-		Values: &templates.Values{
+		Values: templates.Values{
 			Title:       "EuroTrip (2004)",
 			Description: "Directed by Jeff Schaffer, Alec Berg, David Mandel.  With Scott Mechlowicz, Jacob Pitts, Michelle Trachtenberg, Travis Wester. Dumped by his girlfriend, a high school grad decides to embark on an overseas adventure in Europe with his friends.",
 			SiteName:    "IMDb",
@@ -46,7 +46,7 @@ var ExampleLinks = []*Link{
 	},
 	{
 		Private: false,
-		Values: &templates.Values{
+		Values: templates.Values{
 			Title:       "Ali G Indahouse (2002)",
 			Description: "Directed by Mark Mylod.  With Sacha Baron Cohen, Emilio Rivera, Gina La Piana, Dana de Celis. Ali G unwittingly becomes a pawn in the evil Chancellor's plot to overthrow the Prime Minister of Great Britain. However, instead of bringing the Prime Minister down, Ali is embraced by the nation as the voice of youth and 'realness', making the Prime Minister and his government more popular than ever.",
 			SiteName:    "IMDb",
@@ -57,7 +57,7 @@ var ExampleLinks = []*Link{
 	},
 	{
 		Private: false,
-		Values: &templates.Values{
+		Values: templates.Values{
 			Title:       "Kakapo.js",
 			Description: "A bunch of colleagues writing about swift, javascript, ruby, go, algorithms, performance and coding stories",
 			SiteName:    "DevLucky",

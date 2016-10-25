@@ -58,7 +58,7 @@ func testFindRandom(t *testing.T, store Store) {
 }
 
 func testCreateAndFind(t *testing.T, store Store) {
-	values := &templates.Values{Title: "something"}
+	values := templates.Values{Title: "something"}
 	link, err := NewLink(values, true)
 	if err != nil {
 		t.Fatal("Not expecting .NewLink to fail. Instead, got", err)
@@ -80,11 +80,8 @@ func createLinks(t *testing.T, store Store, n int, private bool) []string {
 	slugs := make([]string, n)
 
 	for i := 0; i < n; i++ {
-		link, err := NewLink(&templates.Values{}, private)
-		if err != nil {
-			t.Fatal("Not expecting .NewLink to fail. Instead, got", err)
-		}
-
+		link := RandomLink()
+		link.Private = private
 		slugs = append(slugs, store.Create(link))
 	}
 

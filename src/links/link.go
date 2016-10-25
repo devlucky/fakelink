@@ -5,16 +5,22 @@ import (
 	"github.com/satori/go.uuid"
 	"strconv"
 	"strings"
+	"fmt"
+	"github.com/extemporalgenome/slug"
+	"errors"
 )
 
 // A Link represents a certain template version and values. They are user-generated
 type Link struct {
 	Private bool              `json:"private"`
-	Values  *templates.Values `json:"values"`
+	Values  templates.Values `json:"values"`
 }
 
-func NewLink(values *templates.Values, private bool) (*Link, error) {
-	// TODO: Do some validations here, in case of injection
+func NewLink(values templates.Values, private bool) (*Link, error) {
+	if values.Title == "" {
+		return nil, errors.New("A link's title is mandatory")
+	}
+
 	link := &Link{
 		Values:  values,
 		Private: private,
@@ -22,16 +28,15 @@ func NewLink(values *templates.Values, private bool) (*Link, error) {
 	return link, nil
 }
 
-// TODO: Base this on the title instead of generating a UUID
 func generateSlug(link *Link) string {
-	slug := uuid.NewV4().String()
+	s := fmt.Sprintf("%.80s-%s.6", slug.Slug(link.Values.Title), uuid.NewV4().String())
 
 	// Set all possible flags
 	if link.Private {
-		slug = setFlags(slug, privateFlag)
+		s = setFlags(s, privateFlag)
 	}
 
-	return slug
+	return s
 }
 
 /*

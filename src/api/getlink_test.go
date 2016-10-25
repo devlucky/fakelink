@@ -15,7 +15,7 @@ func TestGetExistingLink(t *testing.T) {
 	config := inMemoryConf()
 	slug := config.LinkStore.Create(
 		&links.Link{
-			Values: &templates.Values{
+			Values: templates.Values{
 				Title: title,
 			},
 		},
