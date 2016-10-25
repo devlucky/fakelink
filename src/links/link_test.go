@@ -2,8 +2,8 @@ package links
 
 import (
 	"github.com/devlucky/fakelink/src/templates"
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestValidNewLink(t *testing.T) {

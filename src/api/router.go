@@ -1,11 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"github.com/devlucky/fakelink/src/images"
 	"github.com/devlucky/fakelink/src/links"
 	"github.com/devlucky/fakelink/src/templates"
 	"github.com/julienschmidt/httprouter"
-	"fmt"
 	"os"
 )
 
@@ -21,7 +21,7 @@ func NewRouter(config *Config) *httprouter.Router {
 
 func inMemoryConf() *Config {
 	return &Config{
-		RootPath:	fmt.Sprintf("%s/src/github.com/devlucky/fakelink", os.Getenv("GOPATH")),
+		RootPath:       fmt.Sprintf("%s/src/github.com/devlucky/fakelink", os.Getenv("GOPATH")),
 		Template:       templates.Get(),
 		LinkStore:      links.NewInMemoryStore(),
 		ImageStore:     images.NewInMemoryStore(),

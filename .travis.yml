@@ -1,0 +1,33 @@
+language: go
+go: ["tip"]
+
+sudo: required
+services:
+  - docker
+
+env:
+  - DOCKER_IMAGE="devlucky/fakelink"
+  - DOCKER_TAG="local"
+  # DOCKER_TAG: $TRAVIS_JOB_ID
+  - DOCKER_COMPOSE_VERSION="1.8.1"
+
+before_install:
+  # Install rocker
+  - GO15VENDOREXPERIMENT=1 go get github.com/grammarly/rocker
+
+  # Install docker-compose
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+install:
+  - bin/docker-build.sh
+
+script:
+  - docker run --entrypoint=go $DOCKER_IMAGE-dev:$DOCKER_TAG fmt ./src/...
+  - bin/docker-run.sh go test -v ./src/...
+
+after_success:
+  - test $TRAVIS_TAG != "" && echo "docker tag $DOCKER_IMAGE:$DOCKER_TAG $DOCKER_IMAGE:$TRAVIS_TAG" && echo "docker push $DOCKER_IMAGE:$TRAVIS_TAG"
+  - test $TRAVIS_BRANCH = "master" && echo "docker tag $DOCKER_IMAGE:$DOCKER_TAG $DOCKER_IMAGE:master" && echo "docker push $DOCKER_IMAGE:master"

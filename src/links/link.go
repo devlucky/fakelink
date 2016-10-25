@@ -1,18 +1,18 @@
 package links
 
 import (
+	"errors"
+	"fmt"
 	"github.com/devlucky/fakelink/src/templates"
+	"github.com/extemporalgenome/slug"
 	"github.com/satori/go.uuid"
 	"strconv"
 	"strings"
-	"fmt"
-	"github.com/extemporalgenome/slug"
-	"errors"
 )
 
 // A Link represents a certain template version and values. They are user-generated
 type Link struct {
-	Private bool              `json:"private"`
+	Private bool             `json:"private"`
 	Values  templates.Values `json:"values"`
 }
 

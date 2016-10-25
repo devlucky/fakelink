@@ -1,8 +1,8 @@
 package links
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestRandomLink(t *testing.T) {
