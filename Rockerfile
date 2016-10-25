@@ -1,6 +1,6 @@
-{{ $registry := (or .Registry "") }}
-{{ $image := (or .Image "devlucky/fakelink") }}
-{{ $version:= (or .Version "local") }}
+{{ $registry := (or .Env.DOCKER_REGISTRY "") }}
+{{ $image := (or .Env.DOCKER_IMAGE "devlucky/fakelink") }}
+{{ $tag:= (or .Env.DOCKER_TAG "local") }}
 
 FROM golang:1.7-alpine
 RUN apk --update add bash
@@ -18,7 +18,7 @@ RUN go build -o /app main.go
 EXPOSE 8080
 ENTRYPOINT ["/app"]
 
-TAG {{$registry}}{{$image}}-dev:{{$version}}
+TAG {{$registry}}{{$image}}-dev:{{$tag}}
 
 EXPORT /app /app
 
@@ -29,4 +29,4 @@ EXPOSE 8080
 IMPORT /app /app
 ENTRYPOINT ["/app"]
 
-TAG {{$registry}}{{$image}}:{{$version}}
+TAG {{$registry}}{{$image}}:{{$tag}}
