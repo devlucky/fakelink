@@ -5,6 +5,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"html/template"
 	"net/http"
+	"github.com/devlucky/fakelink/src/images"
 )
 
 // Config is a container for all the interfaces and configuration options the API uses.
@@ -12,6 +13,9 @@ import (
 type Config struct {
 	Template  *template.Template
 	LinkStore links.Store
+	ImageStore images.Store
+	ImageMaxWidth int
+	ImageMaxHeight int
 }
 
 // Wraps an endpoint handler with a function that has access to a Config

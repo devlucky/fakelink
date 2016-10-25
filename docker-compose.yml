@@ -17,7 +17,7 @@ services:
       MINIO_PORT: "9000"
       MINIO_ACCESS_KEY: "minioclient"
       MINIO_SECRET_KEY: "supersecret"
-
+      MINIO_PUBLIC_URL: "http://localhost:9000"
 
   redis:
     image: redis:3.2-alpine

@@ -13,8 +13,8 @@ import (
 )
 
 type Store interface {
-	Put(slug string, img image.Image) (error)
-	Get(slug string) (img image.Image)
+	Put(key string, img image.Image) (url string, err error)
+	Get(key string) (img image.Image)
 	clear()
 }
 
@@ -32,13 +32,14 @@ func NewInMemoryStore() (*InMemoryStore) {
 	}
 }
 
-func (store *InMemoryStore) Put(slug string, img image.Image) (error) {
-	store.images[slug] = img
-	return nil
+func (store *InMemoryStore) Put(key string, img image.Image) (url string, err error) {
+	store.images[key] = img
+	url = fmt.Sprintf("http://127.0.0.1/%s", key)
+	return
 }
 
-func (store *InMemoryStore) Get(slug string) (image.Image) {
-	return store.images[slug]
+func (store *InMemoryStore) Get(key string) (image.Image) {
+	return store.images[key]
 }
 
 func (store *InMemoryStore) clear() {
@@ -53,9 +54,10 @@ const bucketName = "link-images"
 
 type S3Store struct {
 	client *s3.S3
+	urlPattern string
 }
 
-func NewS3Store(host, port, accessKey, accessSecret string) (*S3Store) {
+func NewS3Store(host, port, accessKey, accessSecret, publicUrl string) (*S3Store) {
 	s3Config := &aws.Config{
 		Credentials:      credentials.NewStaticCredentials(accessKey, accessSecret, ""),
 		Endpoint:         aws.String(fmt.Sprintf("http://%s:%s", host, port)),
@@ -65,37 +67,37 @@ func NewS3Store(host, port, accessKey, accessSecret string) (*S3Store) {
 	}
 	store := &S3Store{
 		client: s3.New(session.New(s3Config)),
+		urlPattern: publicUrl + "/" + bucketName + "/%s",
 	}
 
 	store.createBucket()
 	return store
 }
 
-func (store *S3Store) Put(slug string, img image.Image) (error) {
-	bucket, key := aws.String(bucketName), aws.String(slug)
-
+func (store *S3Store) Put(key string, img image.Image) (url string, err error) {
 	buf := new(bytes.Buffer)
-	err := jpeg.Encode(buf, img, nil)
+	err = jpeg.Encode(buf, img, nil)
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = store.client.PutObject(&s3.PutObjectInput{
 		Body:   bytes.NewReader(buf.Bytes()),
-		Bucket: bucket,
-		Key:    key,
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(key),
 	})
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	url = fmt.Sprintf(store.urlPattern, key)
+	return
 }
 
-func (store *S3Store) Get(slug string) (img image.Image) {
+func (store *S3Store) Get(key string) (img image.Image) {
 	out, err := store.client.GetObject(&s3.GetObjectInput{
 		Bucket: aws.String(bucketName),
-		Key:    aws.String(slug),
+		Key:    aws.String(key),
 	})
 	if err != nil {
 		log.Print("Unexpected error retrieving image from S3", err)

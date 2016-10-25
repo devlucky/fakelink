@@ -4,6 +4,7 @@ import (
 	"testing"
 	"os"
 	"github.com/satori/go.uuid"
+	"net/url"
 )
 
 /*
@@ -28,9 +29,13 @@ func testGetMissing(t *testing.T, store Store) {
 func testPutAndGet(t *testing.T, store Store) {
 	img := generateRandomImage()
 
-	err := store.Put("some-image", img)
+	imgUrlStr, err := store.Put("some-image", img)
 	if err != nil {
 		t.Fatal("Unexpected error on image .Put", err)
+	}
+
+	if _, err = url.Parse(imgUrlStr); err != nil {
+		t.Errorf("Expected %s to be a proper URL", imgUrlStr)
 	}
 
 	retrievedImg := store.Get("some-image")
@@ -58,6 +63,7 @@ func TestS3Store(t *testing.T) {
 		os.Getenv("MINIO_PORT"),
 		os.Getenv("MINIO_ACCESS_KEY"),
 		os.Getenv("MINIO_SECRET_KEY"),
+		os.Getenv("MINIO_PUBLIC_URL"),
 	)
 	behavesLikeAStore(t, store)
 }
@@ -72,9 +78,9 @@ func benchmarkStore(b *testing.B, store Store) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		slug := uuid.NewV4().String()
-		store.Put(slug, img)
-		store.Get(slug)
+		key := uuid.NewV4().String()
+		store.Put(key, img)
+		store.Get(key)
 	}
 }
 
@@ -89,6 +95,7 @@ func BenchmarkS3Store(b *testing.B) {
 		os.Getenv("MINIO_PORT"),
 		os.Getenv("MINIO_ACCESS_KEY"),
 		os.Getenv("MINIO_SECRET_KEY"),
+		os.Getenv("MINIO_PUBLIC_URL"),
 	)
 	benchmarkStore(b, store)
 }

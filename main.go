@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"github.com/devlucky/fakelink/src/images"
 )
 
 func main() {
@@ -17,6 +18,15 @@ func main() {
 			os.Getenv("REDIS_PORT"),
 			os.Getenv("REDIS_PASS"),
 		),
+		ImageStore: images.NewS3Store(
+			os.Getenv("MINIO_HOST"),
+			os.Getenv("MINIO_PORT"),
+			os.Getenv("MINIO_ACCESS_KEY"),
+			os.Getenv("MINIO_SECRET_KEY"),
+			os.Getenv("MINIO_PUBLIC_URL"),
+		),
+		ImageMaxWidth: 512,
+		ImageMaxHeight: 512,
 	}
 	router := api.NewRouter(config)
 

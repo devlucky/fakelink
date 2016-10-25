@@ -7,35 +7,65 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"image"
+	"github.com/devlucky/fakelink/src/images"
+	"github.com/satori/go.uuid"
 )
 
 type PostLinkInput struct {
-	Link *links.Link `json:"link"`
+	Link links.Link `json:"link"`
 }
 
 type PostLinkOutput struct {
 	Slug string `json:"slug"`
 }
 
+// We expect a multipart/form-data request containing:
+// 	- an optional "image"
+// 	- a "json" with the expected input as values
 func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
-	var input PostLinkInput
-
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&input)
+	err := r.ParseMultipartForm(1024)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid request body. Could not be parsed into JSON"))
+		w.Write([]byte(err.Error()))
 		return
 	}
-	defer r.Body.Close()
+
+	input := &PostLinkInput{}
+	err = json.Unmarshal([]byte(r.FormValue("json")), &input)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid request body. Multipart form needs a 'json' key"))
+		return
+	}
 
 	// We pass the new link through the creator in order to validate the raw input
 	link, err := links.NewLink(input.Link.Values, input.Link.Private)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		msg := fmt.Sprintf("Invalid values. Error was: %s", err)
-		w.Write([]byte(msg))
+		w.Write([]byte(fmt.Sprintf("Invalid link: %s", err)))
 		return
+	}
+
+	// If a custom image was uploaded, we store it and point the values to the image's URL
+	file, _, err := r.FormFile("image")
+	if err == nil {
+		img, _, err := image.Decode(file)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf("Could not decode image: %s", err)))
+			return
+		}
+
+		thumbnail := images.Thumbnail(img, c.ImageMaxWidth, c.ImageMaxHeight)
+		imageUrl, err := c.ImageStore.Put(uuid.NewV4().String(), thumbnail)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(fmt.Sprintf("Could upload image: %s", err)))
+			return
+		}
+
+		input.Link.Values.Image = imageUrl
 	}
 
 	slug := c.LinkStore.Create(link)
