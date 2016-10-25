@@ -1,17 +1,17 @@
 package images
 
 import (
-	"testing"
-	"github.com/disintegration/imaging"
 	"bytes"
-	"image/jpeg"
 	"fmt"
+	"github.com/disintegration/imaging"
+	"image/jpeg"
 	"os"
+	"testing"
 )
 
 const (
-	testMaxWidth = 512
-	testMaxHeight = 512
+	testMaxWidth       = 512
+	testMaxHeight      = 512
 	testDumpThumbnails = true
 )
 

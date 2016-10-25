@@ -1,10 +1,10 @@
 package api
 
 import (
+	"github.com/devlucky/fakelink/src/images"
 	"github.com/devlucky/fakelink/src/links"
 	"github.com/devlucky/fakelink/src/templates"
 	"github.com/julienschmidt/httprouter"
-	"github.com/devlucky/fakelink/src/images"
 )
 
 func NewRouter(config *Config) *httprouter.Router {
@@ -19,10 +19,10 @@ func NewRouter(config *Config) *httprouter.Router {
 
 func inMemoryConf() *Config {
 	return &Config{
-		Template:  templates.Get(),
-		LinkStore: links.NewInMemoryStore(),
-		ImageStore: images.NewInMemoryStore(),
-		ImageMaxWidth: 64,
+		Template:       templates.Get(),
+		LinkStore:      links.NewInMemoryStore(),
+		ImageStore:     images.NewInMemoryStore(),
+		ImageMaxWidth:  64,
 		ImageMaxHeight: 64,
 	}
 }

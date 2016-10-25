@@ -3,15 +3,15 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/devlucky/fakelink/src/links"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
-	"mime/multipart"
-	"fmt"
-	"os"
-	"io"
 )
 
 func TestPostLinkWithWrongFormat(t *testing.T) {
@@ -55,7 +55,7 @@ func TestPostLinkWithoutImage(t *testing.T) {
 
 	/*
 		JSON field
-	 */
+	*/
 	input := &PostLinkInput{
 		Link: *links.RandomLink(),
 	}
@@ -70,7 +70,7 @@ func TestPostLinkWithoutImage(t *testing.T) {
 
 	/*
 		Request & Response
-	 */
+	*/
 	req, err := http.NewRequest("POST", "/links", bodyBuf)
 	if err != nil {
 		t.Fatalf("Unexpected error creating a request: %s", err)
@@ -88,7 +88,7 @@ func TestPostLinkWithoutImage(t *testing.T) {
 
 	/*
 		Output
-	 */
+	*/
 	output := &PostLinkOutput{}
 	json.Unmarshal(rr.Body.Bytes(), output)
 
@@ -108,7 +108,7 @@ func TestPostLinkWithImage(t *testing.T) {
 
 	/*
 		JSON field
-	 */
+	*/
 	input := &PostLinkInput{
 		Link: *links.RandomLink(),
 	}
@@ -123,7 +123,7 @@ func TestPostLinkWithImage(t *testing.T) {
 
 	/*
 		IMAGE field
-	 */
+	*/
 	filename := "sharknado.jpg"
 	fileWriter, err := bodyWriter.CreateFormFile("image", filename)
 	if err != nil {
@@ -140,7 +140,7 @@ func TestPostLinkWithImage(t *testing.T) {
 
 	/*
 		Request & Response
-	 */
+	*/
 	req, err := http.NewRequest("POST", "/links", bodyBuf)
 	if err != nil {
 		t.Fatalf("Unexpected error creating a request: %s", err)
@@ -158,7 +158,7 @@ func TestPostLinkWithImage(t *testing.T) {
 
 	/*
 		Output
-	 */
+	*/
 	output := &PostLinkOutput{}
 	json.Unmarshal(rr.Body.Bytes(), output)
 

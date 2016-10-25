@@ -1,10 +1,10 @@
 package images
 
 import (
-	"testing"
-	"os"
 	"github.com/satori/go.uuid"
 	"net/url"
+	"os"
+	"testing"
 )
 
 /*
@@ -68,10 +68,9 @@ func TestS3Store(t *testing.T) {
 	behavesLikeAStore(t, store)
 }
 
-
 /*
 	BENCHMARKS
- */
+*/
 
 func benchmarkStore(b *testing.B, store Store) {
 	img := generateRandomImage()

@@ -1,15 +1,15 @@
 package images
 
 import (
-	"image"
-	"github.com/aws/aws-sdk-go/aws/session"
+	"bytes"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"log"
-	"bytes"
+	"image"
 	"image/jpeg"
+	"log"
 )
 
 type Store interface {
@@ -20,13 +20,13 @@ type Store interface {
 
 /*
 	In-memory implementation of a Store. Used for testing
- */
+*/
 
 type InMemoryStore struct {
 	images map[string]image.Image
 }
 
-func NewInMemoryStore() (*InMemoryStore) {
+func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{
 		images: make(map[string]image.Image),
 	}
@@ -38,7 +38,7 @@ func (store *InMemoryStore) Put(key string, img image.Image) (url string, err er
 	return
 }
 
-func (store *InMemoryStore) Get(key string) (image.Image) {
+func (store *InMemoryStore) Get(key string) image.Image {
 	return store.images[key]
 }
 
@@ -48,16 +48,16 @@ func (store *InMemoryStore) clear() {
 
 /*
 	Implementation of a Store based on AWS S3's API and SDK
- */
+*/
 
 const bucketName = "link-images"
 
 type S3Store struct {
-	client *s3.S3
+	client     *s3.S3
 	urlPattern string
 }
 
-func NewS3Store(host, port, accessKey, accessSecret, publicUrl string) (*S3Store) {
+func NewS3Store(host, port, accessKey, accessSecret, publicUrl string) *S3Store {
 	s3Config := &aws.Config{
 		Credentials:      credentials.NewStaticCredentials(accessKey, accessSecret, ""),
 		Endpoint:         aws.String(fmt.Sprintf("http://%s:%s", host, port)),
@@ -66,7 +66,7 @@ func NewS3Store(host, port, accessKey, accessSecret, publicUrl string) (*S3Store
 		S3ForcePathStyle: aws.Bool(true),
 	}
 	store := &S3Store{
-		client: s3.New(session.New(s3Config)),
+		client:     s3.New(session.New(s3Config)),
 		urlPattern: publicUrl + "/" + bucketName + "/%s",
 	}
 
@@ -151,5 +151,3 @@ func (store *S3Store) createBucket() {
 		}
 	}
 }
-
-

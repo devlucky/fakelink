@@ -3,13 +3,13 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/devlucky/fakelink/src/images"
 	"github.com/devlucky/fakelink/src/links"
 	"github.com/julienschmidt/httprouter"
+	"github.com/satori/go.uuid"
+	"image"
 	"log"
 	"net/http"
-	"image"
-	"github.com/devlucky/fakelink/src/images"
-	"github.com/satori/go.uuid"
 )
 
 type PostLinkInput struct {
