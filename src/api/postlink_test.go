@@ -24,6 +24,7 @@ func TestPostLinkWithWrongFormat(t *testing.T) {
 	NewRouter(inMemoryConf()).ServeHTTP(rr, req)
 
 	expectStatus(t, rr, http.StatusBadRequest)
+	expectHeaderToContain(t, rr, "Access-Control-Allow-Origin", []string{"*"})
 }
 
 func TestPostInvalidLink(t *testing.T) {
@@ -47,6 +48,7 @@ func TestPostInvalidLink(t *testing.T) {
 	NewRouter(config).ServeHTTP(rr, req)
 
 	expectStatus(t, rr, http.StatusBadRequest)
+	expectHeaderToContain(t, rr, "Access-Control-Allow-Origin", []string{"*"})
 }
 
 func TestPostLinkWithoutImage(t *testing.T) {

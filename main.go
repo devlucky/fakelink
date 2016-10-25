@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/devlucky/fakelink/src/api"
 	"github.com/devlucky/fakelink/src/images"
 	"github.com/devlucky/fakelink/src/links"
@@ -8,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"fmt"
 )
 
 func importLinkExamples(c *api.Config) {
@@ -20,8 +20,9 @@ func importLinkExamples(c *api.Config) {
 
 func main() {
 	config := &api.Config{
-		RootPath: fmt.Sprintf("%s/src/github.com/devlucky/fakelink", os.Getenv("GOPATH")),
-		Template: templates.Get(),
+		RootPath:  fmt.Sprintf("%s/src/github.com/devlucky/fakelink", os.Getenv("GOPATH")),
+		DebugMode: os.Getenv("DEBUG") == "true",
+		Template:  templates.Get(),
 		LinkStore: links.NewRedisStore(
 			os.Getenv("REDIS_HOST"),
 			os.Getenv("REDIS_PORT"),

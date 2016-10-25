@@ -14,6 +14,6 @@ func TestInjectConfig(t *testing.T) {
 		}
 	}
 
-	f := InjectConfig(config, handler)
+	f := injectConfig(config, handler)
 	f(nil, nil, nil)
 }

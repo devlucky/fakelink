@@ -11,10 +11,10 @@ import (
 
 func NewRouter(config *Config) *httprouter.Router {
 	router := httprouter.New()
-	router.OPTIONS("/*path", InjectConfig(config, CORS))
-	router.GET("/random", InjectConfig(config, GetRandom))
-	router.GET("/links/:slug", InjectConfig(config, GetLink))
-	router.POST("/links", InjectConfig(config, PostLink))
+	router.OPTIONS("/*path", injectConfig(config, CORS))
+	router.GET("/random", injectConfig(config, GetRandom))
+	router.GET("/links/:slug", injectConfig(config, GetLink))
+	router.POST("/links", injectConfig(config, PostLink))
 
 	return router
 }
@@ -22,6 +22,7 @@ func NewRouter(config *Config) *httprouter.Router {
 func inMemoryConf() *Config {
 	return &Config{
 		RootPath:       fmt.Sprintf("%s/src/github.com/devlucky/fakelink", os.Getenv("GOPATH")),
+		DebugMode:      true,
 		Template:       templates.Get(),
 		LinkStore:      links.NewInMemoryStore(),
 		ImageStore:     images.NewInMemoryStore(),

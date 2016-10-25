@@ -12,6 +12,7 @@ import (
 // It will be injected to the endpoints in order to allow them to access these options in a DI way
 type Config struct {
 	RootPath       string
+	DebugMode      bool
 	Template       *template.Template
 	LinkStore      links.Store
 	ImageStore     images.Store
@@ -20,7 +21,7 @@ type Config struct {
 }
 
 // Wraps an endpoint handler with a function that has access to a Config
-func InjectConfig(c *Config, f func(http.ResponseWriter, *http.Request, httprouter.Params, *Config)) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func injectConfig(c *Config, f func(http.ResponseWriter, *http.Request, httprouter.Params, *Config)) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		f(w, r, ps, c)
 	}
