@@ -1,15 +1,15 @@
 language: go
-go: ["tip"]
 
 sudo: required
 services:
   - docker
 
 env:
-  - DOCKER_IMAGE="devlucky/fakelink"
-  - DOCKER_TAG="local"
-  # DOCKER_TAG: $TRAVIS_JOB_ID
-  - DOCKER_COMPOSE_VERSION="1.8.1"
+  global:
+    - DOCKER_IMAGE="devlucky/fakelink"
+    - DOCKER_TAG="local"
+    # DOCKER_TAG: $TRAVIS_JOB_ID
+    - DOCKER_COMPOSE_VERSION="1.8.1"
 
 before_install:
   # Install rocker
