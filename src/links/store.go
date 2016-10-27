@@ -8,7 +8,7 @@ import (
 	"math/rand"
 )
 
-// A Store allows saving and retrieving user-generated links
+// Store allows saving and retrieving user-generated links.
 type Store interface {
 	Find(slug string) *Link
 	FindRandom() (slug string)
@@ -16,17 +16,13 @@ type Store interface {
 	clear()
 }
 
-/*
-	In-memory
-*/
-
-// In-memory implementation of a template store
+// InMemoryStore is an in-memory implementation of a template store.
 type InMemoryStore struct {
 	public  map[string]*Link
 	private map[string]*Link
 }
 
-// Create a new in-memory store
+// NewInMemoryStore creates a new in-memory store.
 func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{
 		public:  make(map[string]*Link),
@@ -34,14 +30,15 @@ func NewInMemoryStore() *InMemoryStore {
 	}
 }
 
+// Find retrieves a single Link from its slug.
 func (store *InMemoryStore) Find(slug string) *Link {
 	if hasFlag(slug, privateFlag) {
 		return store.private[slug]
-	} else {
-		return store.public[slug]
 	}
+	return store.public[slug]
 }
 
+// FindRandom retrieves a random Link slug.
 func (store *InMemoryStore) FindRandom() (slug string) {
 	if len(store.public) == 0 {
 		return
@@ -61,6 +58,7 @@ func (store *InMemoryStore) FindRandom() (slug string) {
 	return
 }
 
+// Create creates a new Link.
 func (store *InMemoryStore) Create(link *Link) string {
 	slug := generateSlug(link)
 
@@ -78,17 +76,13 @@ func (store *InMemoryStore) clear() {
 	store.private = make(map[string]*Link)
 }
 
-/*
-	Redis
-*/
-
-// Redis implementation of a template store
+// RedisStore is a redis based implementation of a link store.
 type RedisStore struct {
 	public  *redis.Client
 	private *redis.Client
 }
 
-// Create a new in-memory store
+// NewRedisStore create a new in-memory store.
 func NewRedisStore(host, port, password string) *RedisStore {
 	return &RedisStore{
 		public: redis.NewClient(&redis.Options{
@@ -104,6 +98,7 @@ func NewRedisStore(host, port, password string) *RedisStore {
 	}
 }
 
+// Find retrieves a single Link from its slug.
 func (store *RedisStore) Find(slug string) *Link {
 	var db *redis.Client
 
@@ -128,6 +123,7 @@ func (store *RedisStore) Find(slug string) *Link {
 	return link
 }
 
+// FindRandom retrieves a random Link slug.
 func (store *RedisStore) FindRandom() (slug string) {
 	slug, err := store.public.RandomKey().Result()
 	if err != nil {
@@ -138,6 +134,7 @@ func (store *RedisStore) FindRandom() (slug string) {
 	return
 }
 
+// Create creates a new Link.
 func (store *RedisStore) Create(link *Link) string {
 	var db *redis.Client
 

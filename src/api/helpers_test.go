@@ -93,7 +93,7 @@ func testErrorResponseDebugMode(t *testing.T, debugMode bool) {
 	expectHeaderToContain(t, rr, "Content-Type", []string{"application/json"})
 	expectHeaderToContain(t, rr, "Access-Control-Allow-Origin", []string{"*"})
 
-	resp := &ErrorResponseOutput{}
+	resp := &errorResponseOutput{}
 	err = json.Unmarshal(rr.Body.Bytes(), resp)
 	if err != nil {
 		t.Fatalf("Unexpected error unmarshaling JSON response: %s", err)

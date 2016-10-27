@@ -12,13 +12,13 @@ func response(w http.ResponseWriter, status int, json []byte) {
 	w.Write([]byte(json))
 }
 
-type ErrorResponseOutput struct {
+type errorResponseOutput struct {
 	Message      string `json:"message"`
 	DebugMessage string `json:"debug_mesage"`
 }
 
 func errorResponse(w http.ResponseWriter, status int, message string, err error, c *Config) {
-	output := &ErrorResponseOutput{Message: message}
+	output := &errorResponseOutput{Message: message}
 	if c.DebugMode {
 		output.DebugMessage = err.Error()
 	}

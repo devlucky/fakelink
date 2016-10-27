@@ -10,25 +10,25 @@ import (
 	"net/http"
 )
 
-type PostLinkInput struct {
+type postLinkInput struct {
 	Link links.Link `json:"link"`
 }
 
-type PostLinkOutput struct {
+type postLinkOutput struct {
 	Slug string `json:"slug"`
 }
 
 // We expect a multipart/form-data request containing:
 // 	- an optional "image"
 // 	- a "json" with the expected input as values
-func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
+func postLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
 	err := r.ParseMultipartForm(1024)
 	if err != nil {
 		errorResponse(w, http.StatusBadRequest, "Format is not multipart/form-data", err, c)
 		return
 	}
 
-	input := &PostLinkInput{}
+	input := &postLinkInput{}
 	err = json.Unmarshal([]byte(r.FormValue("json")), &input)
 	if err != nil {
 		errorResponse(w, http.StatusBadRequest, "Invalid request body. Multipart form needs a 'json' key", err, c)
@@ -52,18 +52,18 @@ func PostLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *C
 		}
 
 		thumbnail := images.Thumbnail(img, c.ImageMaxWidth, c.ImageMaxHeight)
-		imageUrl, err := c.ImageStore.Put(uuid.NewV4().String(), thumbnail)
+		imageURL, err := c.ImageStore.Put(uuid.NewV4().String(), thumbnail)
 		if err != nil {
 			errorResponse(w, http.StatusInternalServerError, "Could upload image", err, c)
 			return
 		}
 
-		link.Values.Image = imageUrl
+		link.Values.Image = imageURL
 	}
 
 	slug := c.LinkStore.Create(link)
 
-	jsonResp, err := json.Marshal(&PostLinkOutput{slug})
+	jsonResp, err := json.Marshal(&postLinkOutput{slug})
 	if err != nil {
 		errorResponse(w, http.StatusInternalServerError, "Unexpected error when marshaling the response into JSON", err, c)
 		return
