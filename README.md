@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/devlucky/fakelink.svg?branch=master)](https://travis-ci.org/devlucky/fakelink)
 [![Coverage Status](https://coveralls.io/repos/github/devlucky/fakelink/badge.svg)](https://coveralls.io/github/devlucky/fakelink)
+[![Go Report Card](https://goreportcard.com/badge/github.com/devlucky/fakelink)](https://goreportcard.com/report/github.com/devlucky/fakelink)
 
 FakeLink is a small backend that provides FLaaS (Fake Links as a Service), based on the [Open Graph protocol](http://ogp.me/#types)
 
