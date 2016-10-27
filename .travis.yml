@@ -4,6 +4,11 @@ sudo: required
 services:
   - docker
 
+go:
+  - 1.6
+  - 1.7
+  - tip
+
 env:
   global:
     - DOCKER_IMAGE="devlucky/fakelink"
@@ -21,11 +26,15 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 install:
+  - go get -u github.com/kardianos/govendor
+  - go get -u github.com/golang/lint/golint
   - bin/docker-build.sh
 
 script:
-  - docker run --entrypoint=go $DOCKER_IMAGE-dev:$DOCKER_TAG fmt ./src/...
-  - bin/docker-run.sh go test -v ./src/...
+  - govendor fmt +local
+  - govendor vet +local
+  - govendor list -no-status +local | xargs -n1 golint
+  - bin/docker-run.sh "bash -e TRAVIS_JOB_ID=$TRAVIS_JOB_ID -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST" "bin/travis.sh"
 
 after_success:
   - docker login -u $DOCKER_LOGIN_USERNAME -p $DOCKER_LOGIN_PASSWORD

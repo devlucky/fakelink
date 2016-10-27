@@ -3,7 +3,7 @@
 {{ $tag:= (or .Env.DOCKER_TAG "local") }}
 
 FROM golang:1.7-alpine
-RUN apk --update add bash
+RUN apk --update add bash git
 
 # Golang build cache
 MOUNT /go/pkg/linux_amd64 /usr/local/go/pkg/linux_amd64
