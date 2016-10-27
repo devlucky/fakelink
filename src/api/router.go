@@ -9,12 +9,13 @@ import (
 	"os"
 )
 
+// NewRouter creates the router for the main API.
 func NewRouter(config *Config) *httprouter.Router {
 	router := httprouter.New()
-	router.OPTIONS("/*path", injectConfig(config, CORS))
-	router.GET("/random", injectConfig(config, GetRandom))
-	router.GET("/links/:slug", injectConfig(config, GetLink))
-	router.POST("/links", injectConfig(config, PostLink))
+	router.OPTIONS("/*path", injectConfig(config, cors))
+	router.GET("/random", injectConfig(config, getRandom))
+	router.GET("/links/:slug", injectConfig(config, getLink))
+	router.POST("/links", injectConfig(config, postLink))
 
 	return router
 }

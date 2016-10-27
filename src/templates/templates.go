@@ -1,4 +1,4 @@
-// The templates package contains the main templating logic
+// Package templates contains the main templating logic
 // the application uses to provide user-generated htmls
 package templates
 
@@ -13,7 +13,7 @@ type Values struct {
 	Description string `json:"description"`
 	SiteName    string `json:"site_name"`
 	Type        string `json:"type"`
-	Url         string `json:"url"`
+	URL         string `json:"url"`
 	Image       string `json:"image"`
 }
 
@@ -29,7 +29,7 @@ const templateStr = `
     {{if .SiteName}}<meta property="og:site_name" content="{{.SiteName}}" />{{end}}
     {{if .Description}}<meta property="og:description" content="{{.Description}}" />{{end}}
     {{if .Type}}<meta property="og:type" content="{{.Type}}" />{{end}}
-    {{if .Url}}<meta property="og:url" content="{{.Url}}" />{{end}}
+    {{if .URL}}<meta property="og:url" content="{{.URL}}" />{{end}}
     {{if .Image}}<meta property="og:image" content="{{.Image}}" />{{end}}
 </head>
 </html>

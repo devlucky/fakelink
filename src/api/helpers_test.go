@@ -15,7 +15,7 @@ import (
 */
 func expectStatus(t *testing.T, rr *httptest.ResponseRecorder, status int) {
 	if status := rr.Code; status != status {
-		t.Errorf("Expected status to be %s. Instead, it was %s", status, rr.Code)
+		t.Errorf("Expected status to be %d. Instead, it was %d", status, rr.Code)
 	}
 }
 
@@ -93,7 +93,7 @@ func testErrorResponseDebugMode(t *testing.T, debugMode bool) {
 	expectHeaderToContain(t, rr, "Content-Type", []string{"application/json"})
 	expectHeaderToContain(t, rr, "Access-Control-Allow-Origin", []string{"*"})
 
-	resp := &ErrorResponseOutput{}
+	resp := &errorResponseOutput{}
 	err = json.Unmarshal(rr.Body.Bytes(), resp)
 	if err != nil {
 		t.Fatalf("Unexpected error unmarshaling JSON response: %s", err)

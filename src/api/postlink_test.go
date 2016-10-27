@@ -58,7 +58,7 @@ func TestPostLinkWithoutImage(t *testing.T) {
 	/*
 		JSON field
 	*/
-	input := &PostLinkInput{
+	input := &postLinkInput{
 		Link: *links.RandomLink(),
 	}
 	inputBytes, err := json.Marshal(input)
@@ -91,7 +91,7 @@ func TestPostLinkWithoutImage(t *testing.T) {
 	/*
 		Output
 	*/
-	output := &PostLinkOutput{}
+	output := &postLinkOutput{}
 	json.Unmarshal(rr.Body.Bytes(), output)
 
 	link := config.LinkStore.Find(output.Slug)
@@ -111,7 +111,7 @@ func TestPostLinkWithImage(t *testing.T) {
 	/*
 		JSON field
 	*/
-	input := &PostLinkInput{
+	input := &postLinkInput{
 		Link: *links.RandomLink(),
 	}
 	inputBytes, err := json.Marshal(input)
@@ -161,7 +161,7 @@ func TestPostLinkWithImage(t *testing.T) {
 	/*
 		Output
 	*/
-	output := &PostLinkOutput{}
+	output := &postLinkOutput{}
 	json.Unmarshal(rr.Body.Bytes(), output)
 
 	link := config.LinkStore.Find(output.Slug)
