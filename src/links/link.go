@@ -16,6 +16,7 @@ type Link struct {
 	Values  templates.Values `json:"values"`
 }
 
+// NewLink creates a new Link from its template values.
 func NewLink(values templates.Values, private bool) (*Link, error) {
 	if values.Title == "" {
 		return nil, errors.New("A link's title is mandatory")

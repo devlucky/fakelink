@@ -29,13 +29,13 @@ func testGetMissing(t *testing.T, store Store) {
 func testPutAndGet(t *testing.T, store Store) {
 	img := generateRandomImage()
 
-	imgUrlStr, err := store.Put("some-image", img)
+	imgURLStr, err := store.Put("some-image", img)
 	if err != nil {
 		t.Fatal("Unexpected error on image .Put", err)
 	}
 
-	if _, err = url.Parse(imgUrlStr); err != nil {
-		t.Errorf("Expected %s to be a proper URL", imgUrlStr)
+	if _, err = url.Parse(imgURLStr); err != nil {
+		t.Errorf("Expected %s to be a proper URL", imgURLStr)
 	}
 
 	retrievedImg := store.Get("some-image")

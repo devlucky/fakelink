@@ -3,7 +3,7 @@
 *.a
 *.so
 /tmp/
-
+*.coverfile
 
 # Folders
 _obj

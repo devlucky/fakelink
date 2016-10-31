@@ -23,7 +23,7 @@ func TestExecuteTemplateWithValues(t *testing.T) {
 		Description: "some-description",
 		SiteName:    "some-site-name",
 		Type:        "some-type",
-		Url:         "some-url",
+		URL:         "some-url",
 		Image:       "some-image",
 	}
 
@@ -37,7 +37,7 @@ func TestExecuteTemplateWithValues(t *testing.T) {
 		values.Title,
 		values.Description,
 		values.Type,
-		values.Url,
+		values.URL,
 		values.Image,
 	)
 }
@@ -56,7 +56,7 @@ func TestExecuteTemplateWithoutValues(t *testing.T) {
 		"description",
 		"site_name",
 		"type",
-		"url",
+		"URL",
 		"image",
 	)
 }
@@ -64,7 +64,7 @@ func TestExecuteTemplateWithoutValues(t *testing.T) {
 func expectToContain(t *testing.T, template string, values ...string) {
 	for _, value := range values {
 		if !strings.Contains(template, value) {
-			t.Error(fmt.Sprintf("Expected generated template to include %s", value))
+			t.Errorf("Expected generated template to include %s", value)
 		}
 	}
 }
@@ -72,7 +72,7 @@ func expectToContain(t *testing.T, template string, values ...string) {
 func expectNotToContain(t *testing.T, template string, tags ...string) {
 	for _, tag := range tags {
 		if strings.Contains(template, fmt.Sprintf("og:%s", tag)) {
-			t.Error(fmt.Sprintf("Expected generated template not to include %s when one was not specified", tag))
+			t.Errorf("Expected generated template not to include %s when one was not specified", tag)
 		}
 	}
 }

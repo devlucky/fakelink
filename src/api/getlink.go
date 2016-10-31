@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func GetLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
+func getLink(w http.ResponseWriter, r *http.Request, ps httprouter.Params, c *Config) {
 	slug := ps.ByName("slug")
 
 	link := c.LinkStore.Find(slug)

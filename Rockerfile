@@ -1,9 +1,10 @@
+{{ $version := (or .Env.DOCKER_GO_VERSION "1.7")}}
 {{ $registry := (or .Env.DOCKER_REGISTRY "") }}
 {{ $image := (or .Env.DOCKER_IMAGE "devlucky/fakelink") }}
 {{ $tag:= (or .Env.DOCKER_TAG "local") }}
 
-FROM golang:1.7-alpine
-RUN apk --update add bash
+FROM golang:{{ $version }}-alpine
+RUN apk --update add bash git
 
 # Golang build cache
 MOUNT /go/pkg/linux_amd64 /usr/local/go/pkg/linux_amd64
